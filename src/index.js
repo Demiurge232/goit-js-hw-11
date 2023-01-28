@@ -34,12 +34,13 @@ const searchPhoto = evt => {
       );
       reset();
       return;
+    } else if (data.totalHits > 40) {
+      loadMoreBtn.classList.remove('is-hidden');
     }
+    page = 1;
     Notify.success(`Hooray! We found ${data.totalHits} images.`);
     divEl.innerHTML = photoMarkup(data.hits);
-    loadMoreBtn.classList.remove('is-hidden');
     gallery.refresh();
-    page = 1;
   });
 };
 
@@ -48,7 +49,7 @@ const onClickLoadBtn = () => {
   PixabayAPI(query, page).then(data => {
     divEl.insertAdjacentHTML('beforeend', photoMarkup(data.hits));
     gallery.refresh();
-    if (page >= data.totalHits / 40) {
+    if (page >= Math.ceil(data.totalHits / 40)) {
       page = 1;
       loadMoreBtn.classList.add('is-hidden');
       Notify.warning(
